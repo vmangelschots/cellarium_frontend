@@ -1,13 +1,18 @@
 import React from 'react';
 import { Home, BookOpen, Heart, Settings as SettingsIcon, MoreHorizontal } from 'lucide-react';
-
+import { WineList } from './components/WineList'; // Adjust the import path as necessary
 export default function HomePage() {
   return (
     <div className="flex h-screen">
       {/* Sidebar */}
       <aside className="w-64 bg-gray-800 text-white p-6 flex flex-col">
-        <h1 className="text-2xl font-semibold mb-8">Wine App</h1>
+
+        <div className="flex items-center mb-8">
+          <img src="/logo.png" alt="Cellarium Logo" className="h-12 mr-4" />
+          <h1 className="text-2xl font-semibold">Cellarium</h1>
+        </div>
         <nav className="flex-1 space-y-4">
+          
           <a href="#" className="flex items-center text-lg font-medium bg-indigo-600 px-4 py-2 rounded-lg">
             <Home className="h-5 w-5 mr-2" />
             Home
@@ -43,16 +48,9 @@ export default function HomePage() {
         </header>
 
         {/* Content Grid */}
+       
         <div className="grid grid-cols-2 gap-6">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="bg-white p-6 rounded-lg shadow">
-              <h3 className="text-xl font-semibold mb-2 text-gray-900">Wine Title</h3>
-              <p className="text-gray-700 mb-4">Short description about the wine.</p>
-              <button className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">
-                View
-              </button>
-            </div>
-          ))}
+        <WineList />
         </div>
       </main>
     </div>
