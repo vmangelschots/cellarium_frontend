@@ -85,3 +85,25 @@ export async function consumeBottle(bottleId) {
 export async function undoConsumeBottle(bottleId) {
   return http(`/api/bottles/${bottleId}/undo_consume/`, { method: "POST" });
 }
+
+export async function searchWines(q) {
+  const params = new URLSearchParams();
+  if (q) params.set("search", q);
+  return http(`/api/wines/?${params.toString()}`);
+}
+
+
+
+export async function updateWine(id, payload) {
+  return http(`/api/wines/${id}/`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function createBottle(payload) {
+  return http(`/api/bottles/`, {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}

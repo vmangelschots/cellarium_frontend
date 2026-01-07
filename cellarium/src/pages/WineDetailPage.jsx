@@ -21,6 +21,7 @@ import {
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import LocalBarIcon from "@mui/icons-material/LocalBar";
 import UndoIcon from "@mui/icons-material/Undo";
+import WineGlassRating from "../components/WineGlassRating.jsx";
 
 import {
   getWine,
@@ -112,6 +113,7 @@ export default function WineDetailPage() {
           <Typography variant="h4" sx={{ fontWeight: 800 }}>
             {wine.name} - {wine.vintage}
           </Typography>
+          <WineGlassRating value={wine.rating} onChange={() => {}} />
           <Typography variant="body2" color="text.secondary">
             Individual bottles
           </Typography>
@@ -123,77 +125,7 @@ export default function WineDetailPage() {
         />
       </Box>
 
-      <Card variant="outlined">
-        <CardContent>
-          <Typography sx={{ fontWeight: 700, mb: 1 }}>
-            Add bottles
-          </Typography>
-
-          <Box component="form" onSubmit={onAdd}>
-            <Grid container spacing={2}>
-              <Grid size={{ xs: 12, sm: 1 }}>
-                <TextField
-                  label="Count"
-                  type="number"
-                  inputProps={{ min: 1 }}
-                  value={count}
-                  onChange={(e) => setCount(e.target.value)}
-                  fullWidth
-                />
-              </Grid>
-
-              <Grid size={{ xs: 12, sm: 4 }}>
-                <FormControl fullWidth>
-                  <InputLabel id="store-label">Store</InputLabel>
-                  <Select
-                    labelId="store-label"
-                    label="Store"
-                    value={storeId}
-                    onChange={(e) => setStoreId(e.target.value)}
-                  >
-                    <MenuItem value="">
-                      <em>No store</em>
-                    </MenuItem>
-                    {stores.map((s) => (
-                      <MenuItem key={s.id} value={String(s.id)}>
-                        {s.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-
-               <Grid size={{ xs: 12, sm: 3 }}>
-                <TextField
-                  label="Price"
-                  type="number"
-                  inputProps={{ min: 0, step: "0.01" }}
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  fullWidth
-                />
-              </Grid>
-
-              <Grid size={{ xs: 12, sm: 4 }}>
-                <TextField
-                  label="Purchase date"
-                  type="date"
-                  value={purchaseDate}
-                  onChange={(e) => setPurchaseDate(e.target.value)}
-                  InputLabelProps={{ shrink: true }}
-                  fullWidth
-                />
-              </Grid>
-
-              <Grid size={{ xs: 12, sm: 12 }}>
-                <Button type="submit" variant="contained" fullWidth sx={{ height: "100%" }}>
-                  Add
-                </Button>
-              </Grid>
-            </Grid>
-          </Box>
-        </CardContent>
-      </Card>
+      
 
       <Card variant="outlined">
         <CardContent>
