@@ -124,7 +124,7 @@ export default function WineDetailPage() {
         <Box sx={{ display: "flex", gap: 2, p: 2 }}>
           <Box
             component="img"
-            src={WINE_PLACEHOLDER}
+            src={wine.image || WINE_PLACEHOLDER}
             alt=""
             sx={{
               height: 160,

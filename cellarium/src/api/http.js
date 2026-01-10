@@ -11,7 +11,7 @@ console.log("🔍 Platform:", Capacitor.isNativePlatform() ? "Native" : "Web");
 console.log("🔍 VITE_API_BASE_URL:", import.meta.env.VITE_API_BASE_URL);
 
 export async function http(path, options = {}) {
-  const { params, headers, _retry, ...rest } = options;
+  const { params, headers, _retry, skipContentTypeHeader, ...rest } = options;
 
   const url = new URL(`${API_BASE}${path}`);
   if (params) {
@@ -23,10 +23,18 @@ export async function http(path, options = {}) {
 
   const token = getAccessToken();
 
+  // Build headers - skip Content-Type if explicitly told (for FormData)
+  const headersList = {
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+
+  if (!skipContentTypeHeader) {
+    headersList["Content-Type"] = "application/json";
+  }
+
   const res = await fetch(url.toString(), {
     headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...headersList,
       ...(headers || {}),
     },
     ...rest,

@@ -12,23 +12,30 @@ export async function listWines() {
   return asList(payload);
 }
 
-export async function createWine({
-  name,
-  region,
-  country,
-  vintage,
-  grape_varieties,
-  wine_type,
-  notes,
-} = {}) {
+export async function createWine(payload) {
+  // If payload is FormData (has image file), send as multipart/form-data
+  // Otherwise, build a JSON object for standard fields
+  if (payload instanceof FormData) {
+    return http("/api/wines/", {
+      method: "POST",
+      body: payload,
+      headers: {
+        // Don't set Content-Type; let the browser set it with the boundary
+      },
+      skipContentTypeHeader: true,
+    });
+  }
+
+  // Original JSON-based approach for backward compatibility
   const body = {};
-  if (name != null) body.name = name;
-  if (region != null) body.region = region;
-  if (country != null) body.country = country;
-  if (vintage != null) body.vintage = vintage;
-  if (grape_varieties != null) body.grape_varieties = grape_varieties;
-  if (wine_type != null) body.wine_type = wine_type;
-  if (notes != null) body.notes = notes;
+  if (payload.name != null) body.name = payload.name;
+  if (payload.region != null) body.region = payload.region;
+  if (payload.country != null) body.country = payload.country;
+  if (payload.vintage != null) body.vintage = payload.vintage;
+  if (payload.grape_varieties != null) body.grape_varieties = payload.grape_varieties;
+  if (payload.wine_type != null) body.wine_type = payload.wine_type;
+  if (payload.image != null) body.image = payload.image;
+  if (payload.notes != null) body.notes = payload.notes;
 
   return http("/api/wines/", {
     method: "POST",
@@ -95,6 +102,16 @@ export async function searchWines(q) {
 
 
 export async function updateWine(id, payload) {
+  // If payload is FormData (has image file), send as multipart/form-data
+  if (payload instanceof FormData) {
+    return http(`/api/wines/${id}/`, {
+      method: "PATCH",
+      body: payload,
+      skipContentTypeHeader: true,
+    });
+  }
+
+  // Otherwise send as JSON
   return http(`/api/wines/${id}/`, {
     method: "PATCH",
     body: JSON.stringify(payload),

@@ -10,6 +10,7 @@ import {
   CircularProgress,
   IconButton,
   Typography,
+  Box,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { updateWine, createWine } from "../api/wineApi";
@@ -17,6 +18,7 @@ import { updateWine, createWine } from "../api/wineApi";
 export default function EditWineModal({ open, onClose, wine, onSave, mode = "edit" }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [imageFile, setImageFile] = useState(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -39,6 +41,7 @@ export default function EditWineModal({ open, onClose, wine, onSave, mode = "edi
           vintage: wine.vintage || "",
           wine_type: wine.wine_type || "",
           grape_varieties: wine.grape_varieties || "",
+          image: wine.image || "",
           notes: wine.notes || "",
         });
       } else if (mode === "create") {
@@ -53,6 +56,7 @@ export default function EditWineModal({ open, onClose, wine, onSave, mode = "edi
           notes: "",
         });
       }
+      setImageFile(null);
       setError("");
     }
   }, [open, wine, mode]);
@@ -63,6 +67,13 @@ export default function EditWineModal({ open, onClose, wine, onSave, mode = "edi
       ...prev,
       [name]: value,
     }));
+  }
+
+  function handleImageChange(e) {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+    }
   }
 
   async function handleSubmit(e) {
@@ -76,15 +87,16 @@ export default function EditWineModal({ open, onClose, wine, onSave, mode = "edi
       setLoading(true);
       setError("");
 
-      // Only send fields that are not empty
-      const payload = {};
-      if (formData.name) payload.name = formData.name;
-      if (formData.country) payload.country = formData.country;
-      if (formData.region) payload.region = formData.region;
-      if (formData.vintage) payload.vintage = formData.vintage;
-      if (formData.wine_type) payload.wine_type = formData.wine_type;
-      if (formData.grape_varieties) payload.grape_varieties = formData.grape_varieties;
-      if (formData.notes) payload.notes = formData.notes;
+      // Build FormData for file upload
+      const payload = new FormData();
+      if (formData.name) payload.append("name", formData.name);
+      if (formData.country) payload.append("country", formData.country);
+      if (formData.region) payload.append("region", formData.region);
+      if (formData.vintage) payload.append("vintage", formData.vintage);
+      if (formData.wine_type) payload.append("wine_type", formData.wine_type);
+      if (formData.grape_varieties) payload.append("grape_varieties", formData.grape_varieties);
+      if (imageFile) payload.append("image", imageFile);
+      if (formData.notes) payload.append("notes", formData.notes);
 
       if (mode === "create") {
         await createWine(payload);
@@ -198,6 +210,34 @@ export default function EditWineModal({ open, onClose, wine, onSave, mode = "edi
             rows={2}
             placeholder="e.g., Cabernet Sauvignon, Merlot"
           />
+
+          <Box>
+            <Typography variant="body2" sx={{ mb: 1, fontWeight: 600 }}>
+              Wine Image (optional)
+            </Typography>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              disabled={loading}
+              style={{
+                display: "block",
+                width: "100%",
+                padding: "8px",
+                borderRadius: "4px",
+                border: "1px solid rgba(255, 255, 255, 0.23)",
+                backgroundColor: "transparent",
+                color: "rgba(255, 255, 255, 0.7)",
+                cursor: loading ? "not-allowed" : "pointer",
+                opacity: loading ? 0.5 : 1,
+              }}
+            />
+            {imageFile && (
+              <Typography variant="caption" color="success.main" sx={{ mt: 0.5, display: "block" }}>
+                ✓ {imageFile.name}
+              </Typography>
+            )}
+          </Box>
 
           <TextField
             label="Notes"

@@ -241,7 +241,7 @@ export default function WinesPage() {
                 >
                   <Box
                     component="img"
-                    src={WINE_PLACEHOLDER}
+                    src={wine.image || WINE_PLACEHOLDER}
                     alt=""
                     sx={{
                       height: 140,
