@@ -26,6 +26,10 @@ export default function AppShell() {
 
   const [addOpen, setAddOpen] = useState(false);
 
+  // Extract wine ID if on detail page
+  const wineIdMatch = location.pathname.match(/^\/wines\/(\d+)$/);
+  const currentWineId = wineIdMatch ? wineIdMatch[1] : null;
+
   return (
     <Box sx={{ minHeight: "100vh" }}>
       <AppBar
@@ -116,6 +120,7 @@ export default function AppShell() {
           // MVP: refresh the current route so lists update
           navigate(0);
         }}
+        initialWineId={currentWineId}
       />
     </Box>
   );

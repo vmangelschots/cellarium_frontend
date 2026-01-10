@@ -19,26 +19,32 @@ import {
   MenuItem,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import EditIcon from "@mui/icons-material/Edit";
 import LocalBarIcon from "@mui/icons-material/LocalBar";
 import UndoIcon from "@mui/icons-material/Undo";
 import WineGlassRating from "../components/WineGlassRating.jsx";
+import EditWineModal from "../components/EditWineModal.jsx";
 
 import {
   getWine,
   addBottles,
   consumeBottle,
   undoConsumeBottle,
+  updateWine,
 } from "../api/wineApi";
 
 import { listStores } from "../api/storeApi";
-
-function todayISODate() {
-  // local date, YYYY-MM-DD (no timezone surprises)
-  const d = new Date();
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const dd = String(d.getDate()).padStart(2, "0");
-  return `${yyyy}-${mm}-${dd}`;
+import { todayISODate } from "../utils/date";
+const WINE_PLACEHOLDER = "/images/generic_red_wine.png";
+function Stat({ label, value }) {
+  return (
+    <Box>
+      <Typography variant="overline" color="text.secondary">
+        {label}
+      </Typography>
+      <Typography sx={{ fontWeight: 800 }}>{value}</Typography>
+    </Box>
+  );
 }
 
 export default function WineDetailPage() {
@@ -52,6 +58,8 @@ export default function WineDetailPage() {
   const [storeId, setStoreId] = useState(""); // string for Select
   const [price, setPrice] = useState("");
   const [purchaseDate, setPurchaseDate] = useState(todayISODate());
+  const [editOpen, setEditOpen] = useState(false);
+
 
   useEffect(() => {
     listStores()
@@ -105,27 +113,60 @@ export default function WineDetailPage() {
 
   return (
     <Stack spacing={2.5}>
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-        <IconButton component={Link} to="/wines">
-          <ArrowBackIcon />
-        </IconButton>
-        <Box sx={{ flex: 1 }}>
-          <Typography variant="h4" sx={{ fontWeight: 800 }}>
-            {wine.name} - {wine.vintage}
-          </Typography>
-          <WineGlassRating value={wine.rating} onChange={() => {}} />
-          <Typography variant="body2" color="text.secondary">
-            Individual bottles
-          </Typography>
-        </Box>
-        <Chip
-          label={`${wine.total_quantity} in cellar`}
-          color="primary"
-          variant="outlined"
-        />
-      </Box>
+      <Card
+        variant="outlined"
+        sx={{
+          borderRadius: 3,
+          overflow: "hidden",
+          mb: 2.5,
+        }}
+      >
+        <Box sx={{ display: "flex", gap: 2, p: 2 }}>
+          <Box
+            component="img"
+            src={WINE_PLACEHOLDER}
+            alt=""
+            sx={{
+              height: 160,
+              width: 70,
+              objectFit: "cover",
+              borderRadius: 1.5,
+              boxShadow: 2,
+              flexShrink: 0,
+            }}
+          />
 
-      
+          <Box sx={{ minWidth: 0 }}>
+            <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 0.5 }}>
+              <Typography variant="h5" sx={{ fontWeight: 900 }}>
+                {wine.name}
+              </Typography>
+              <IconButton
+                size="small"
+                onClick={() => setEditOpen(true)}
+                sx={{
+                  color: "primary.main",
+                  "&:hover": { bgcolor: "rgba(139, 21, 56, 0.1)" },
+                }}
+              >
+                <EditIcon fontSize="small" />
+              </IconButton>
+            </Stack>
+
+            <Typography variant="body2" color="text.secondary">
+              {wine.country ?? "Unknown country"}
+              {wine.vintage ? ` · ${wine.vintage}` : ""}
+            </Typography>
+
+            <Stack direction="row" spacing={2} sx={{ mt: 1.5 }}>
+              <Stat label="In stock" value={wine.in_stock_count ?? 0} />
+              <Stat label="Total" value={wine.bottle_count ?? 0} />
+            </Stack>
+          </Box>
+        </Box>
+      </Card>
+
+
 
       <Card variant="outlined">
         <CardContent>
@@ -156,7 +197,7 @@ export default function WineDetailPage() {
                 >
                   <Box sx={{ flex: 1 }}>
                     <Typography sx={{ fontWeight: 700 }}>
-                      {bottle.purchase_date} - ${bottle.price || "N/A"} 
+                      {bottle.purchase_date} - ${bottle.price || "N/A"}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
                       {bottle.consumed_at
@@ -188,6 +229,33 @@ export default function WineDetailPage() {
           )}
         </CardContent>
       </Card>
+      <Card variant="outlined" sx={{ borderRadius: 2 }}>
+        <CardContent>
+          <Typography variant="overline" color="text.secondary">
+            Notes
+          </Typography>
+
+          {wine.notes ? (
+            <Typography sx={{ mt: 0.5 }}>{wine.notes}</Typography>
+          ) : (
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ fontStyle: "italic" }}
+            >
+              No tasting notes yet.
+            </Typography>
+          )}
+        </CardContent>
+      </Card>
+      
+      {/* Edit Wine Modal */}
+      <EditWineModal
+        open={editOpen}
+        onClose={() => setEditOpen(false)}
+        wine={wine}
+        onSave={load}
+      />
     </Stack>
   );
 }

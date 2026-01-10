@@ -1,0 +1,8 @@
+{
+  "appId": "org.mangelschots.cellarium.app",
+  "appName": "Cellarium",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "http"
+  }
+}
