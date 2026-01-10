@@ -39,6 +39,7 @@ export default function AppShell() {
           bgcolor: "background.paper",
           borderBottom: "1px solid",
           borderColor: "divider",
+          paddingTop: "env(safe-area-inset-top)",
         }}
       >
 
@@ -86,10 +87,6 @@ export default function AppShell() {
             <Tab label="Stores" value="/stores" sx={{ minHeight: 40 }} />
           </Tabs>
 
-          <Box sx={{ flex: 1 }} />
-          <Typography variant="body2" color="text.secondary">
-            Wine inventory
-          </Typography>
         </Toolbar>
       </AppBar>
 

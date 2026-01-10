@@ -12,20 +12,35 @@ import {
   Typography,
   InputAdornment,
   Divider,
+  Collapse,
+  IconButton,
+  Chip,
+  Badge,
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import SearchIcon from "@mui/icons-material/Search";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import LocalBarIcon from "@mui/icons-material/LocalBar";
+import FilterListIcon from "@mui/icons-material/FilterList";
+import CloseIcon from "@mui/icons-material/Close";
 
 const WINE_PLACEHOLDER = "/images/generic_red_wine.png";
 const HERO_IMG = "/images/wine-cellar-hero.jpg";
+
+const WINE_TYPES = [
+  { key: "red", label: "Red" },
+  { key: "white", label: "White" },
+  { key: "rosé", label: "Rosé" },
+  { key: "sparkling", label: "Sparkling" },
+];
 
 export default function WinesPage() {
   const [wines, setWines] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(true);
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [selectedTypes, setSelectedTypes] = useState([]);
 
   async function load() {
     setLoading(true);
@@ -57,9 +72,20 @@ export default function WinesPage() {
 
   const filtered = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
-    if (!q) return wines;
-    return wines.filter((w) => w.name.toLowerCase().includes(q));
-  }, [wines, searchQuery]);
+    let result = wines;
+    
+    // Filter by search query
+    if (q) {
+      result = result.filter((w) => w.name.toLowerCase().includes(q));
+    }
+    
+    // Filter by wine type
+    if (selectedTypes.length > 0) {
+      result = result.filter((w) => selectedTypes.includes(w.wine_type));
+    }
+    
+    return result;
+  }, [wines, searchQuery, selectedTypes]);
 
   async function onAdd(e) {
     e.preventDefault();
@@ -109,47 +135,147 @@ export default function WinesPage() {
             Curate and manage your personal wine cellar.
           </Typography>
 
-          <TextField
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search wines…"
-            fullWidth
-            sx={{
-              mt: 2,
+          <Stack direction="row" spacing={1} sx={{ mt: 2 }}>
+            <TextField
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search wines…"
+              fullWidth
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: 999,
+                  color: "white",
+                  backgroundColor: "rgba(255,255,255,0.18)",
+                  backdropFilter: "blur(10px)",
 
-              "& .MuiOutlinedInput-root": {
-                borderRadius: 999,
-                color: "white",
+                  "& fieldset": {
+                    border: "1px solid rgba(255,255,255,0.25)",
+                  },
+
+                  "&:hover fieldset": {
+                    borderColor: "rgba(255,255,255,0.4)",
+                  },
+
+                  "&.Mui-focused fieldset": {
+                    borderColor: "rgba(255,255,255,0.6)",
+                    boxShadow: "0 0 0 2px rgba(255,255,255,0.15)",
+                  },
+                },
+
+                "& input::placeholder": {
+                  color: "rgba(255,255,255,0.7)",
+                  opacity: 1,
+                },
+              }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ color: "rgba(255,255,255,0.75)" }} />
+                  </InputAdornment>
+                ),
+              }}
+            />
+            
+            <IconButton
+              onClick={() => setFilterOpen(!filterOpen)}
+              sx={{
+                width: 56,
+                height: 56,
                 backgroundColor: "rgba(255,255,255,0.18)",
                 backdropFilter: "blur(10px)",
-
-                "& fieldset": {
-                  border: "1px solid rgba(255,255,255,0.25)",
-                },
-
-                "&:hover fieldset": {
+                border: "1px solid rgba(255,255,255,0.25)",
+                color: "white",
+                transition: "all 120ms ease",
+                "&:hover": {
+                  backgroundColor: "rgba(255,255,255,0.25)",
                   borderColor: "rgba(255,255,255,0.4)",
                 },
+              }}
+            >
+              <Badge
+                badgeContent={selectedTypes.length}
+                color="primary"
+                sx={{
+                  "& .MuiBadge-badge": {
+                    backgroundColor: "#cbb994",
+                    color: "#000",
+                    fontWeight: 700,
+                  },
+                }}
+              >
+                <FilterListIcon />
+              </Badge>
+            </IconButton>
+          </Stack>
 
-                "&.Mui-focused fieldset": {
-                  borderColor: "rgba(255,255,255,0.6)",
-                  boxShadow: "0 0 0 2px rgba(255,255,255,0.15)",
-                },
-              },
-
-              "& input::placeholder": {
-                color: "rgba(255,255,255,0.7)",
-                opacity: 1,
-              },
-            }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon sx={{ color: "rgba(255,255,255,0.75)" }} />
-                </InputAdornment>
-              ),
-            }}
-          />
+          {/* Collapsible filter panel */}
+          <Collapse in={filterOpen}>
+            <Card
+              variant="outlined"
+              sx={{
+                mt: 1.5,
+                borderRadius: 2,
+                bgcolor: "rgba(255,255,255,0.18)",
+                borderColor: "rgba(255,255,255,0.25)",
+                backdropFilter: "blur(10px)",
+              }}
+            >
+              <CardContent sx={{ py: 1.5 }}>
+                <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                  {WINE_TYPES.map((type) => (
+                    <Chip
+                      key={type.key}
+                      label={type.label}
+                      onClick={() => {
+                        setSelectedTypes((prev) =>
+                          prev.includes(type.key)
+                            ? prev.filter((t) => t !== type.key)
+                            : [...prev, type.key]
+                        );
+                      }}
+                      sx={{
+                        backgroundColor: selectedTypes.includes(type.key)
+                          ? "#cbb994"
+                          : "rgba(255,255,255,0.12)",
+                        color: selectedTypes.includes(type.key)
+                          ? "#000"
+                          : "rgba(255,255,255,0.88)",
+                        borderColor: selectedTypes.includes(type.key)
+                          ? "#cbb994"
+                          : "rgba(255,255,255,0.25)",
+                        fontWeight: selectedTypes.includes(type.key) ? 700 : 500,
+                        transition: "all 120ms ease",
+                        "&:hover": {
+                          backgroundColor: selectedTypes.includes(type.key)
+                            ? "#d4c6a5"
+                            : "rgba(255,255,255,0.2)",
+                        },
+                      }}
+                      variant="outlined"
+                    />
+                  ))}
+                  
+                  {selectedTypes.length > 0 && (
+                    <Chip
+                      label="Clear filters"
+                      onClick={() => setSelectedTypes([])}
+                      onDelete={() => setSelectedTypes([])}
+                      deleteIcon={<CloseIcon />}
+                      sx={{
+                        backgroundColor: "rgba(255,255,255,0.12)",
+                        color: "rgba(255,255,255,0.88)",
+                        borderColor: "rgba(255,255,255,0.25)",
+                        "&:hover": {
+                          backgroundColor: "rgba(255,255,255,0.2)",
+                        },
+                      }}
+                      variant="outlined"
+                    />
+                  )}
+                </Stack>
+              </CardContent>
+            </Card>
+          </Collapse>
 
           {/* Stats inside hero */}
           <Card
@@ -210,9 +336,28 @@ export default function WinesPage() {
 
 
 
-      <Grid container spacing={2}>
-        {filtered.map((wine) => (
-          <Grid key={wine.id} size={{ xs: 12, sm: 6, md: 4 }}>
+      {filtered.length === 0 ? (
+        <Box
+          sx={{
+            textAlign: "center",
+            py: 8,
+            color: "text.secondary",
+          }}
+        >
+          <LocalBarIcon sx={{ fontSize: 64, opacity: 0.3, mb: 2 }} />
+          <Typography variant="h6" sx={{ mb: 1 }}>
+            No wines match your filters
+          </Typography>
+          <Typography variant="body2">
+            {selectedTypes.length > 0 || searchQuery
+              ? "Try adjusting your search or filters"
+              : "Add your first wine to get started"}
+          </Typography>
+        </Box>
+      ) : (
+        <Grid container spacing={2}>
+          {filtered.map((wine) => (
+            <Grid key={wine.id} size={{ xs: 12, sm: 6, md: 4 }}>
             <Card
               variant="outlined"
               sx={{
@@ -284,7 +429,8 @@ export default function WinesPage() {
             </Card>
           </Grid>
         ))}
-      </Grid>
+        </Grid>
+      )}
     </Stack>
   );
 }

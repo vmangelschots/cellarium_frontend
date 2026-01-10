@@ -84,6 +84,18 @@ export default function WineDetailPage() {
     load();
   }, [id]);
 
+  function formatDate(iso) {
+  if (!iso) return "Unknown date";
+  const d = new Date(iso);
+  return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+}
+
+function formatMoney(value) {
+  if (value === null || value === undefined || value === "") return null;
+  const n = Number(value);
+  if (Number.isNaN(n)) return null;
+  return n.toLocaleString(undefined, { style: "currency", currency: "EUR" });
+}
   async function onAdd(e) {
     e.preventDefault();
     await addBottles({
@@ -208,52 +220,73 @@ export default function WineDetailPage() {
               No bottles yet.
             </Typography>
           ) : (
-            <Stack spacing={1.5}>
-              {wine.bottles.map((bottle) => (
-                <Box
-                  key={bottle.id}
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 1.5,
-                    p: 1.5,
-                    border: "1px solid",
-                    borderColor: "divider",
-                    borderRadius: 2,
-                    opacity: bottle.consumed_at ? 0.6 : 1,
-                  }}
-                >
-                  <Box sx={{ flex: 1 }}>
-                    <Typography sx={{ fontWeight: 700 }}>
-                      {bottle.purchase_date} - ${bottle.price || "N/A"}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {bottle.consumed_at
-                        ? `Consumed on ${new Date(
-                          bottle.consumed_at
-                        ).toLocaleDateString()}`
-                        : "In cellar"}
-                    </Typography>
-                  </Box>
+<Stack spacing={1.5}>
+  {wine.bottles.map((bottle) => {
+    const price = formatMoney(bottle.price);
+    const storeName =
+      bottle.store?.name  || null; // adapt to your shape
 
-                  {bottle.consumed_at ? (
-                    <IconButton
-                      aria-label="Undo consume"
-                      onClick={() => onUndo(bottle.id)}
-                    >
-                      <UndoIcon />
-                    </IconButton>
-                  ) : (
-                    <IconButton
-                      aria-label="Consume bottle"
-                      onClick={() => onConsume(bottle.id)}
-                    >
-                      <LocalBarIcon />
-                    </IconButton>
-                  )}
-                </Box>
-              ))}
-            </Stack>
+    const isConsumed = !!bottle.consumed_at;
+
+    return (
+      <Box
+        key={bottle.id}
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: 1.5,
+          p: 1.5,
+          border: "1px solid",
+          borderColor: "divider",
+          borderRadius: 2,
+          opacity: isConsumed ? 0.65 : 1,
+        }}
+      >
+        <Box sx={{ flex: 1, minWidth: 0 }}>
+          {/* Line 1: date + price */}
+          <Box sx={{ display: "flex", alignItems: "baseline", gap: 1, minWidth: 0 }}>
+            <Typography sx={{ fontWeight: 800, whiteSpace: "nowrap" }}>
+              {formatDate(bottle.purchase_date)}
+            </Typography>
+
+            <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: "nowrap" }}>
+              {price ?? "Price unknown"}
+            </Typography>
+          </Box>
+
+          {/* Line 2: store + status */}
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{
+              mt: 0.25,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {(storeName ? storeName : "Store unknown") +
+              " · " +
+              (isConsumed
+                ? `Consumed ${formatDate(bottle.consumed_at)}`
+                : "In cellar")}
+          </Typography>
+        </Box>
+
+        {isConsumed ? (
+          <IconButton aria-label="Undo consume" onClick={() => onUndo(bottle.id)}>
+            <UndoIcon />
+          </IconButton>
+        ) : (
+          <IconButton aria-label="Consume bottle" onClick={() => onConsume(bottle.id)}>
+            <LocalBarIcon />
+          </IconButton>
+        )}
+      </Box>
+    );
+  })}
+</Stack>
+
           )}
         </CardContent>
       </Card>
