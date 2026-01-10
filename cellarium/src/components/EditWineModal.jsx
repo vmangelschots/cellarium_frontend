@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { updateWine, createWine } from "../api/wineApi";
+import WineGlassRating from "./WineGlassRating";
 
 export default function EditWineModal({ open, onClose, wine, onSave, mode = "edit" }) {
   const [loading, setLoading] = useState(false);
@@ -28,6 +29,7 @@ export default function EditWineModal({ open, onClose, wine, onSave, mode = "edi
     wine_type: "",
     grape_varieties: "",
     notes: "",
+    rating: "",
   });
 
   // Pre-fill form with wine data when modal opens (edit mode)
@@ -43,6 +45,7 @@ export default function EditWineModal({ open, onClose, wine, onSave, mode = "edi
           grape_varieties: wine.grape_varieties || "",
           image: wine.image || "",
           notes: wine.notes || "",
+          rating: wine.rating || "",
         });
       } else if (mode === "create") {
         // Reset form for create mode
@@ -54,6 +57,7 @@ export default function EditWineModal({ open, onClose, wine, onSave, mode = "edi
           wine_type: "",
           grape_varieties: "",
           notes: "",
+          rating: "",
         });
       }
       setImageFile(null);
@@ -97,6 +101,7 @@ export default function EditWineModal({ open, onClose, wine, onSave, mode = "edi
       if (formData.grape_varieties) payload.append("grape_varieties", formData.grape_varieties);
       if (imageFile) payload.append("image", imageFile);
       if (formData.notes) payload.append("notes", formData.notes);
+      if (formData.rating) payload.append("rating", formData.rating);
 
       if (mode === "create") {
         await createWine(payload);
@@ -210,7 +215,7 @@ export default function EditWineModal({ open, onClose, wine, onSave, mode = "edi
             rows={2}
             placeholder="e.g., Cabernet Sauvignon, Merlot"
           />
-
+        <WineGlassRating readOnly={false} value={formData.rating || 0} onChange={(val) => setFormData((prev) => ({ ...prev, rating: val }))} />
           <Box>
             <Typography variant="body2" sx={{ mb: 1, fontWeight: 600 }}>
               Wine Image (optional)

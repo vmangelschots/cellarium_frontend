@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import {
   Alert,
   Box,
@@ -49,6 +49,7 @@ function Stat({ label, value }) {
 
 export default function WineDetailPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [wine, setWine] = useState(null);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
@@ -113,6 +114,31 @@ export default function WineDetailPage() {
 
   return (
     <Stack spacing={2.5}>
+      <Box
+      onClick={() => navigate(-1)}
+        sx={{
+          px: 2,
+          py: 1,
+          display: "flex",
+          alignItems: "center",
+          gap: 1,
+        }}
+      >
+        <IconButton
+          size="small"
+          disableRipple
+          sx={{
+            color: "text.secondary",
+            "&:hover": { bgcolor: "transparent" },
+          }}
+        >
+          <ArrowBackIcon fontSize="small" />
+        </IconButton>
+
+        <Typography variant="subtitle1" color="text.secondary">
+          Wine details
+        </Typography>
+      </Box>
       <Card
         variant="outlined"
         sx={{
@@ -138,6 +164,7 @@ export default function WineDetailPage() {
 
           <Box sx={{ minWidth: 0 }}>
             <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 0.5 }}>
+
               <Typography variant="h5" sx={{ fontWeight: 900 }}>
                 {wine.name}
               </Typography>
@@ -162,6 +189,7 @@ export default function WineDetailPage() {
               <Stat label="In stock" value={wine.in_stock_count ?? 0} />
               <Stat label="Total" value={wine.bottle_count ?? 0} />
             </Stack>
+            <WineGlassRating readOnly={true} value={wine.rating ?? 0} />
           </Box>
         </Box>
       </Card>
@@ -248,7 +276,7 @@ export default function WineDetailPage() {
           )}
         </CardContent>
       </Card>
-      
+
       {/* Edit Wine Modal */}
       <EditWineModal
         open={editOpen}
