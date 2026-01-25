@@ -2,13 +2,22 @@
 import { Capacitor } from "@capacitor/core";
 import { getAccessToken, refreshAccessToken, clearTokens } from "./auth";
 
+// Runtime config from window.__ENV__ (Docker) takes precedence over build-time Vite env vars
+const getRuntimeConfig = () => {
+  if (typeof window !== "undefined" && window.__ENV__?.API_BASE_URL) {
+    return window.__ENV__.API_BASE_URL;
+  }
+  return null;
+};
+
 // Use full URL for native platforms, relative for web
 export const API_BASE = Capacitor.isNativePlatform()
-  ? import.meta.env.VITE_API_BASE_URL || "http://172.21.2.74:8000" // Update with your backend IP
-  : import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+  ? getRuntimeConfig() || import.meta.env.VITE_API_BASE_URL || "http://172.21.2.74:8000" // Update with your backend IP
+  : getRuntimeConfig() || import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 console.log("🔍 API_BASE:", API_BASE);
 console.log("🔍 Platform:", Capacitor.isNativePlatform() ? "Native" : "Web");
 console.log("🔍 VITE_API_BASE_URL:", import.meta.env.VITE_API_BASE_URL);
+console.log("🔍 Runtime config:", getRuntimeConfig());
 
 export async function http(path, options = {}) {
   const { params, headers, _retry, skipContentTypeHeader, ...rest } = options;

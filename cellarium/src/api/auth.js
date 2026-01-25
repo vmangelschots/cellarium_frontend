@@ -39,6 +39,7 @@ export async function refreshAccessToken() {
   const data = await http("/api/auth/token/refresh/", {
     method: "POST",
     body: JSON.stringify({ refresh }),
+    _retry: true, // Prevent infinite loop - don't try to refresh if refresh fails
   });
 
   // refresh endpoint returns { access }, keep existing refresh

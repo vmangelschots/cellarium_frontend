@@ -11,6 +11,10 @@ import {
   IconButton,
   Typography,
   Box,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { updateWine, createWine } from "../api/wineApi";
@@ -194,15 +198,22 @@ export default function EditWineModal({ open, onClose, wine, onSave, mode = "edi
             type="number"
           />
 
-          <TextField
-            label="Wine Type"
-            name="wine_type"
-            value={formData.wine_type}
-            onChange={handleChange}
-            fullWidth
-            disabled={loading}
-            placeholder="e.g., Red, White, Rosé"
-          />
+          <FormControl fullWidth disabled={loading}>
+            <InputLabel id="wine-type-label">Wine Type</InputLabel>
+            <Select
+              labelId="wine-type-label"
+              label="Wine Type"
+              name="wine_type"
+              value={formData.wine_type}
+              onChange={handleChange}
+            >
+              <MenuItem value=""><em>None</em></MenuItem>
+              <MenuItem value="red">Rood</MenuItem>
+              <MenuItem value="white">Wit</MenuItem>
+              <MenuItem value="rosé">Rosé</MenuItem>
+              <MenuItem value="sparkling">Schuimwijn</MenuItem>
+            </Select>
+          </FormControl>
 
           <TextField
             label="Grape Varieties"
