@@ -173,12 +173,12 @@ export default function AddFlowModal({ open, onClose, onDone, initialWineId }) {
 
   const title =
     step === "identify"
-      ? "Add wine"
+      ? "Wijn toevoegen"
       : step === "intent"
-        ? "What do you want to do?"
+        ? "Wat wil je doen?"
         : step === "bought"
-          ? "Add bottle"
-          : "Save memory";
+          ? "Fles toevoegen"
+          : "Herinnering opslaan";
 
   return (
     <>
@@ -216,24 +216,24 @@ export default function AddFlowModal({ open, onClose, onDone, initialWineId }) {
           <Stack spacing={2}>
             {selectedWine?.name && step !== "identify" && (
               <Typography variant="body2" color="text.secondary">
-                Selected: <strong>{selectedWine.name}</strong>
+                Geselecteerd: <strong>{selectedWine.name}</strong>
               </Typography>
             )}
 
             {step === "identify" && (
               <Stack spacing={2}>
                 <TextField
-                  label="Search your wines (or create a new one)"
+                  label="Zoek je wijnen (of maak een nieuwe aan)"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Type a wine name…"
+                  placeholder="Typ een wijnnaam…"
                   autoFocus
                   fullWidth
                 />
 
                 {loading && (
                   <Typography variant="body2" color="text.secondary">
-                    Searching…
+                    Zoeken…
                   </Typography>
                 )}
 
@@ -246,7 +246,7 @@ export default function AddFlowModal({ open, onClose, onDone, initialWineId }) {
                           .join(" • ");
                         const meta =
                           typeof w.in_stock_count === "number"
-                            ? `In stock: ${w.in_stock_count} • Total bottles: ${w.bottle_count}`
+                            ? `Op voorraad: ${w.in_stock_count} · Totaal flessen: ${w.bottle_count}`
                             : null;
 
                         return (
@@ -279,7 +279,7 @@ export default function AddFlowModal({ open, onClose, onDone, initialWineId }) {
                   <Stack spacing={1.5}>
                     <Divider />
                     <Typography variant="body2" color="text.secondary">
-                      Not seeing it? Create a new wine:
+                      Niet gevonden? Maak een nieuwe wijn aan:
                     </Typography>
 
                     <Button
@@ -288,7 +288,7 @@ export default function AddFlowModal({ open, onClose, onDone, initialWineId }) {
                       disabled={loading}
                       sx={{ fontWeight: 800 }}
                     >
-                      Create "{query.trim()}"
+                      Maak "{query.trim()}" aan
                     </Button>
                   </Stack>
                 )}
@@ -303,9 +303,9 @@ export default function AddFlowModal({ open, onClose, onDone, initialWineId }) {
                   sx={{ justifyContent: "flex-start", textAlign: "left", py: 1.25 }}
                 >
                   <Stack>
-                    <Typography sx={{ fontWeight: 800 }}>🍾 I bought it</Typography>
+                    <Typography sx={{ fontWeight: 800 }}>🍾 Ik heb het gekocht</Typography>
                     <Typography variant="body2" color="text.secondary">
-                      Add a bottle to your inventory
+                      Voeg een fles toe aan je voorraad
                     </Typography>
                   </Stack>
                 </Button>
@@ -316,9 +316,9 @@ export default function AddFlowModal({ open, onClose, onDone, initialWineId }) {
                   sx={{ justifyContent: "flex-start", textAlign: "left", py: 1.25 }}
                 >
                   <Stack>
-                    <Typography sx={{ fontWeight: 800 }}>⭐ I drank it</Typography>
+                    <Typography sx={{ fontWeight: 800 }}>⭐ Ik heb het gedronken</Typography>
                     <Typography variant="body2" color="text.secondary">
-                      Save rating + notes (no bottle)
+                      Bewaar beoordeling + notities (geen fles)
                     </Typography>
                   </Stack>
                 </Button>
@@ -330,9 +330,9 @@ export default function AddFlowModal({ open, onClose, onDone, initialWineId }) {
                     sx={{ justifyContent: "flex-start", textAlign: "left", py: 1.25 }}
                   >
                     <Stack>
-                      <Typography sx={{ fontWeight: 800 }}>📖 Just save it</Typography>
+                      <Typography sx={{ fontWeight: 800 }}>📖 Gewoon opslaan</Typography>
                       <Typography variant="body2" color="text.secondary">
-                        Keep it in your collection without extras
+                        Bewaar in je collectie zonder extra's
                       </Typography>
                     </Stack>
                   </Button>
@@ -345,7 +345,7 @@ export default function AddFlowModal({ open, onClose, onDone, initialWineId }) {
                     }}
                     sx={{ fontWeight: 800 }}
                   >
-                    ✅ Open wine
+                    ✅ Wijn openen
                   </Button>
                 )}
 
@@ -354,7 +354,7 @@ export default function AddFlowModal({ open, onClose, onDone, initialWineId }) {
                   onClick={() => setStep("identify")}
                   sx={{ justifyContent: "flex-start" }}
                 >
-                  ← Back
+                  ← Terug
                 </Button>
               </Stack>
             )}
@@ -362,7 +362,7 @@ export default function AddFlowModal({ open, onClose, onDone, initialWineId }) {
             {step === "bought" && (
               <Stack spacing={1.5}>
                 <TextField
-                  label="Purchase date"
+                  label="Aankoopdatum"
                   type="date"
                   value={bottleDraft.purchase_date}
                   onChange={(e) =>
@@ -372,12 +372,12 @@ export default function AddFlowModal({ open, onClose, onDone, initialWineId }) {
                 />
 
                 <TextField
-                  label="Price (optional)"
+                  label="Prijs (optioneel)"
                   value={bottleDraft.price}
                   onChange={(e) =>
                     setBottleDraft((d) => ({ ...d, price: e.target.value }))
                   }
-                  placeholder="e.g. 12.50"
+                  placeholder="bijv. 12.50"
                 />
 
                 <Button
@@ -386,7 +386,7 @@ export default function AddFlowModal({ open, onClose, onDone, initialWineId }) {
                   disabled={loading}
                   sx={{ fontWeight: 800 }}
                 >
-                  Add bottle
+                  Fles toevoegen
                 </Button>
 
                 <Button
@@ -394,7 +394,7 @@ export default function AddFlowModal({ open, onClose, onDone, initialWineId }) {
                   onClick={() => setStep("intent")}
                   sx={{ justifyContent: "flex-start" }}
                 >
-                  ← Back
+                  ← Terug
                 </Button>
               </Stack>
             )}
@@ -403,7 +403,7 @@ export default function AddFlowModal({ open, onClose, onDone, initialWineId }) {
               <Stack spacing={2}>
                 <Stack spacing={1}>
                   <Typography variant="body2" color="text.secondary">
-                    Rating
+                    Beoordeling
                   </Typography>
                   <WineGlassRating
                     value={memoryDraft.rating}
@@ -412,12 +412,12 @@ export default function AddFlowModal({ open, onClose, onDone, initialWineId }) {
                 </Stack>
 
                 <TextField
-                  label="Notes"
+                  label="Notities"
                   value={memoryDraft.notes}
                   onChange={(e) =>
                     setMemoryDraft((d) => ({ ...d, notes: e.target.value }))
                   }
-                  placeholder="What did you like about it?"
+                  placeholder="Wat vond je ervan?"
                   multiline
                   minRows={4}
                   fullWidth
@@ -429,7 +429,7 @@ export default function AddFlowModal({ open, onClose, onDone, initialWineId }) {
                   disabled={loading}
                   sx={{ fontWeight: 800 }}
                 >
-                  Save
+                  Opslaan
                 </Button>
 
                 <Button
@@ -437,7 +437,7 @@ export default function AddFlowModal({ open, onClose, onDone, initialWineId }) {
                   onClick={() => setStep("intent")}
                   sx={{ justifyContent: "flex-start" }}
                 >
-                  ← Back
+                  ← Terug
                 </Button>
               </Stack>
             )}

@@ -28,10 +28,10 @@ const WINE_PLACEHOLDER = "/images/generic_red_wine.png";
 const HERO_IMG = "/images/wine-cellar-hero.jpg";
 
 const WINE_TYPES = [
-  { key: "red", label: "Red" },
-  { key: "white", label: "White" },
+  { key: "red", label: "Rood" },
+  { key: "white", label: "Wit" },
   { key: "rosé", label: "Rosé" },
-  { key: "sparkling", label: "Sparkling" },
+  { key: "sparkling", label: "Schuimwijn" },
 ];
 
 export default function WinesPage() {
@@ -128,18 +128,18 @@ export default function WinesPage() {
             }}
           >
 
-            My Wine Collection
+            Mijn Wijncollectie
           </Typography>
 
           <Typography sx={{ mt: 0.5, color: "rgba(255,255,255,0.88)" }}>
-            Curate and manage your personal wine cellar.
+            Beheer en cureer je persoonlijke wijnkelder.
           </Typography>
 
           <Stack direction="row" spacing={1} sx={{ mt: 2 }}>
             <TextField
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search wines…"
+              placeholder="Zoek wijnen…"
               fullWidth
               sx={{
                 "& .MuiOutlinedInput-root": {
@@ -257,7 +257,7 @@ export default function WinesPage() {
                   
                   {selectedTypes.length > 0 && (
                     <Chip
-                      label="Clear filters"
+                      label="Filters wissen"
                       onClick={() => setSelectedTypes([])}
                       onDelete={() => setSelectedTypes([])}
                       deleteIcon={<CloseIcon />}
@@ -293,7 +293,7 @@ export default function WinesPage() {
               <Grid container spacing={2}>
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <Typography variant="overline" sx={{ color: "rgba(255,255,255,0.7)" }}>
-                    Wines
+                    Wijnen
                   </Typography>
                   <Typography variant="h6" sx={{ fontWeight: 900 }}>
                     {stats.totalWines}
@@ -302,7 +302,7 @@ export default function WinesPage() {
 
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <Typography variant="overline" sx={{ color: "rgba(255,255,255,0.7)" }}>
-                    In stock
+                    Op voorraad
                   </Typography>
                   <Typography variant="h6" sx={{ fontWeight: 900 }}>
                     {stats.totalInStock}
@@ -311,7 +311,7 @@ export default function WinesPage() {
 
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <Typography variant="overline" sx={{ color: "rgba(255,255,255,0.7)" }}>
-                    Consumed
+                    Geconsumeerd
                   </Typography>
                   <Typography variant="h6" sx={{ fontWeight: 900 }}>
                     {stats.totalConsumed}
@@ -320,7 +320,7 @@ export default function WinesPage() {
 
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <Typography variant="overline" sx={{ color: "rgba(255,255,255,0.7)" }}>
-                    Total bottles
+                    Totaal flessen
                   </Typography>
                   <Typography variant="h6" sx={{ fontWeight: 900 }}>
                     {stats.totalBottles}
@@ -346,12 +346,12 @@ export default function WinesPage() {
         >
           <LocalBarIcon sx={{ fontSize: 64, opacity: 0.3, mb: 2 }} />
           <Typography variant="h6" sx={{ mb: 1 }}>
-            No wines match your filters
+            Geen wijnen gevonden
           </Typography>
           <Typography variant="body2">
             {selectedTypes.length > 0 || searchQuery
-              ? "Try adjusting your search or filters"
-              : "Add your first wine to get started"}
+              ? "Pas je zoekopdracht of filters aan"
+              : "Voeg je eerste wijn toe om te beginnen"}
           </Typography>
         </Box>
       ) : (
@@ -419,7 +419,7 @@ export default function WinesPage() {
                       sx={{ display: "flex", alignItems: "center", gap: 0.75 }}
                     >
                       <LocalBarIcon fontSize="inherit" />
-                      {wine.in_stock_count ?? 0} in stock
+                      {wine.in_stock_count ?? 0} op voorraad
                     </Typography>
                   </Box>
 

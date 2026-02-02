@@ -52,16 +52,16 @@ export default function StoresPage() {
 
       <Card variant="outlined">
         <CardContent>
-          <Typography sx={{ fontWeight: 700, mb: 1 }}>Add store</Typography>
+          <Typography sx={{ fontWeight: 700, mb: 1 }}>Winkel toevoegen</Typography>
           <form onSubmit={onAdd} style={{ display: "flex", gap: 10 }}>
             <TextField
               fullWidth
-              placeholder="e.g. Delhaize, Carrefour, Wine shop name…"
+              placeholder="bijv. Delhaize, Carrefour, wijnwinkel naam…"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
             <Button type="submit" variant="contained">
-              Add
+              Toevoegen
             </Button>
           </form>
         </CardContent>
@@ -69,12 +69,12 @@ export default function StoresPage() {
 
       <Card variant="outlined">
         <CardContent>
-          <Typography sx={{ fontWeight: 700, mb: 1 }}>Stores</Typography>
+          <Typography sx={{ fontWeight: 700, mb: 1 }}>Winkels</Typography>
 
           {loading ? (
-            <Typography color="text.secondary">Loading…</Typography>
+            <Typography color="text.secondary">Laden…</Typography>
           ) : stores.length === 0 ? (
-            <Typography color="text.secondary">No stores yet.</Typography>
+            <Typography color="text.secondary">Nog geen winkels.</Typography>
           ) : (
             <List dense>
               {stores.map((s) => (
@@ -94,10 +94,10 @@ function BoxHeader() {
   return (
     <div>
       <Typography variant="h4" sx={{ fontWeight: 800, mb: 0.5 }}>
-        Stores
+        Winkels
       </Typography>
       <Typography variant="body2" color="text.secondary">
-        Where you buy bottles.
+        Waar je flessen koopt.
       </Typography>
     </div>
   );

@@ -30,26 +30,26 @@ export default function LoginPage() {
         <CardContent>
           <Stack spacing={2}>
             <Typography variant="h5" sx={{ fontWeight: 800 }}>
-              Sign in
+              Aanmelden
             </Typography>
 
             <Box component="form" onSubmit={onSubmit}>
               <Stack spacing={2}>
                 <TextField
-                  label="Username"
+                  label="Gebruikersnaam"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   autoFocus
                 />
                 <TextField
-                  label="Password"
+                  label="Wachtwoord"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
                 {err ? <Typography color="error">{err}</Typography> : null}
                 <Button type="submit" variant="contained" disabled={loading}>
-                  {loading ? "Signing in…" : "Sign in"}
+                  {loading ? "Aanmelden…" : "Aanmelden"}
                 </Button>
               </Stack>
             </Box>

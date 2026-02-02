@@ -85,7 +85,7 @@ export default function WineDetailPage() {
   }, [id]);
 
   function formatDate(iso) {
-  if (!iso) return "Unknown date";
+  if (!iso) return "Onbekende datum";
   const d = new Date(iso);
   return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
 }
@@ -120,7 +120,7 @@ function formatMoney(value) {
     await load();
   }
 
-  if (loading) return <Typography color="text.secondary">Loading…</Typography>;
+  if (loading) return <Typography color="text.secondary">Laden…</Typography>;
   if (err) return <Alert severity="error">{err}</Alert>;
   if (!wine) return null;
 
@@ -148,7 +148,7 @@ function formatMoney(value) {
         </IconButton>
 
         <Typography variant="subtitle1" color="text.secondary">
-          Wine details
+          Wijndetails
         </Typography>
       </Box>
       <Card
@@ -193,13 +193,13 @@ function formatMoney(value) {
             </Stack>
 
             <Typography variant="body2" color="text.secondary">
-              {wine.country ?? "Unknown country"}
+              {wine.country ?? "Onbekend land"}
               {wine.vintage ? ` · ${wine.vintage}` : ""}
             </Typography>
 
             <Stack direction="row" spacing={2} sx={{ mt: 1.5 }}>
-              <Stat label="In stock" value={wine.in_stock_count ?? 0} />
-              <Stat label="Total" value={wine.bottle_count ?? 0} />
+              <Stat label="Op voorraad" value={wine.in_stock_count ?? 0} />
+              <Stat label="Totaal" value={wine.bottle_count ?? 0} />
             </Stack>
             <WineGlassRating readOnly={true} value={wine.rating ?? 0} />
           </Box>
@@ -211,13 +211,13 @@ function formatMoney(value) {
       <Card variant="outlined">
         <CardContent>
           <Typography sx={{ fontWeight: 700, mb: 1 }}>
-            Bottles
+            Flessen
           </Typography>
           <Divider sx={{ mb: 2 }} />
 
           {wine.bottles.length === 0 ? (
             <Typography color="text.secondary">
-              No bottles yet.
+              Nog geen flessen.
             </Typography>
           ) : (
 <Stack spacing={1.5}>
@@ -250,7 +250,7 @@ function formatMoney(value) {
             </Typography>
 
             <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: "nowrap" }}>
-              {price ?? "Price unknown"}
+              {price ?? "Prijs onbekend"}
             </Typography>
           </Box>
 
@@ -265,11 +265,11 @@ function formatMoney(value) {
               whiteSpace: "nowrap",
             }}
           >
-            {(storeName ? storeName : "Store unknown") +
+            {(storeName ? storeName : "Winkel onbekend") +
               " · " +
               (isConsumed
-                ? `Consumed ${formatDate(bottle.consumed_at)}`
-                : "In cellar")}
+                ? `Geconsumeerd ${formatDate(bottle.consumed_at)}`
+                : "In kelder")}
           </Typography>
         </Box>
 
@@ -293,7 +293,7 @@ function formatMoney(value) {
       <Card variant="outlined" sx={{ borderRadius: 2 }}>
         <CardContent>
           <Typography variant="overline" color="text.secondary">
-            Notes
+            Notities
           </Typography>
 
           {wine.notes ? (
@@ -304,7 +304,7 @@ function formatMoney(value) {
               color="text.secondary"
               sx={{ fontStyle: "italic" }}
             >
-              No tasting notes yet.
+              Nog geen proefnotities.
             </Typography>
           )}
         </CardContent>

@@ -83,8 +83,8 @@ export default function AppShell() {
             indicatorColor="primary"
             sx={{ minHeight: 40 }}
           >
-            <Tab label="Wines" value="/wines" sx={{ minHeight: 40 }} />
-            <Tab label="Stores" value="/stores" sx={{ minHeight: 40 }} />
+            <Tab label="Wijnen" value="/wines" sx={{ minHeight: 40 }} />
+            <Tab label="Winkels" value="/stores" sx={{ minHeight: 40 }} />
           </Tabs>
 
         </Toolbar>

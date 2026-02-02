@@ -87,7 +87,7 @@ export default function EditWineModal({ open, onClose, wine, onSave, mode = "edi
   async function handleSubmit(e) {
     e.preventDefault();
     if (!formData.name.trim()) {
-      setError("Wine name is required");
+      setError("Wijnnaam is verplicht");
       return;
     }
 
@@ -124,7 +124,7 @@ export default function EditWineModal({ open, onClose, wine, onSave, mode = "edi
   }
 
   const isCreateMode = mode === "create";
-  const title = isCreateMode ? "Create Wine" : "Edit Wine";
+  const title = isCreateMode ? "Wijn aanmaken" : "Wijn bewerken";
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
@@ -157,57 +157,57 @@ export default function EditWineModal({ open, onClose, wine, onSave, mode = "edi
           )}
 
           <TextField
-            label="Wine Name *"
+            label="Wijnnaam *"
             name="name"
             value={formData.name}
             onChange={handleChange}
             fullWidth
             disabled={loading}
-            placeholder="e.g., Château Margaux"
+            placeholder="bijv. Château Margaux"
             autoFocus
           />
 
           <TextField
-            label="Country"
+            label="Land"
             name="country"
             value={formData.country}
             onChange={handleChange}
             fullWidth
             disabled={loading}
-            placeholder="e.g., France"
+            placeholder="bijv. Frankrijk"
           />
 
           <TextField
-            label="Region"
+            label="Streek"
             name="region"
             value={formData.region}
             onChange={handleChange}
             fullWidth
             disabled={loading}
-            placeholder="e.g., Bordeaux"
+            placeholder="bijv. Bordeaux"
           />
 
           <TextField
-            label="Vintage"
+            label="Jaar"
             name="vintage"
             value={formData.vintage}
             onChange={handleChange}
             fullWidth
             disabled={loading}
-            placeholder="e.g., 2015"
+            placeholder="bijv. 2015"
             type="number"
           />
 
           <FormControl fullWidth disabled={loading}>
-            <InputLabel id="wine-type-label">Wine Type</InputLabel>
+            <InputLabel id="wine-type-label">Wijntype</InputLabel>
             <Select
               labelId="wine-type-label"
-              label="Wine Type"
+              label="Wijntype"
               name="wine_type"
               value={formData.wine_type}
               onChange={handleChange}
             >
-              <MenuItem value=""><em>None</em></MenuItem>
+              <MenuItem value=""><em>Geen</em></MenuItem>
               <MenuItem value="red">Rood</MenuItem>
               <MenuItem value="white">Wit</MenuItem>
               <MenuItem value="rosé">Rosé</MenuItem>
@@ -216,7 +216,7 @@ export default function EditWineModal({ open, onClose, wine, onSave, mode = "edi
           </FormControl>
 
           <TextField
-            label="Grape Varieties"
+            label="Druivensoorten"
             name="grape_varieties"
             value={formData.grape_varieties}
             onChange={handleChange}
@@ -224,12 +224,12 @@ export default function EditWineModal({ open, onClose, wine, onSave, mode = "edi
             disabled={loading}
             multiline
             rows={2}
-            placeholder="e.g., Cabernet Sauvignon, Merlot"
+            placeholder="bijv. Cabernet Sauvignon, Merlot"
           />
         <WineGlassRating readOnly={false} value={formData.rating || 0} onChange={(val) => setFormData((prev) => ({ ...prev, rating: val }))} />
           <Box>
             <Typography variant="body2" sx={{ mb: 1, fontWeight: 600 }}>
-              Wine Image (optional)
+              Wijnfoto (optioneel)
             </Typography>
             <input
               type="file"
@@ -256,7 +256,7 @@ export default function EditWineModal({ open, onClose, wine, onSave, mode = "edi
           </Box>
 
           <TextField
-            label="Notes"
+            label="Notities"
             name="notes"
             value={formData.notes}
             onChange={handleChange}
@@ -264,21 +264,21 @@ export default function EditWineModal({ open, onClose, wine, onSave, mode = "edi
             disabled={loading}
             multiline
             rows={3}
-            placeholder="Add your tasting notes, impressions, recommendations..."
+            placeholder="Voeg je proefnotities, indrukken, aanbevelingen toe…"
           />
         </Stack>
       </DialogContent>
 
       <DialogActions sx={{ p: 2, gap: 1 }}>
         <Button onClick={onClose} disabled={loading}>
-          Cancel
+          Annuleren
         </Button>
         <Button
           onClick={handleSubmit}
           variant="contained"
           disabled={loading || !formData.name.trim()}
         >
-          {loading ? "Saving..." : isCreateMode ? "Create Wine" : "Save Changes"}
+          {loading ? "Opslaan…" : isCreateMode ? "Wijn aanmaken" : "Wijzigingen opslaan"}
         </Button>
       </DialogActions>
     </Dialog>
