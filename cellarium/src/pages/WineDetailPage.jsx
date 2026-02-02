@@ -35,7 +35,15 @@ import {
 
 import { listStores } from "../api/storeApi";
 import { todayISODate } from "../utils/date";
+import { WINE_COUNTRIES } from "../constants/countries";
 const WINE_PLACEHOLDER = "/images/generic_red_wine.png";
+
+function getCountryName(isoCode) {
+  if (!isoCode) return "Onbekend land";
+  const country = WINE_COUNTRIES.find((c) => c.code === isoCode);
+  return country ? country.label : isoCode; // Fall back to ISO code if not found
+}
+
 function Stat({ label, value }) {
   return (
     <Box>
@@ -193,7 +201,7 @@ function formatMoney(value) {
             </Stack>
 
             <Typography variant="body2" color="text.secondary">
-              {wine.country ?? "Onbekend land"}
+              {getCountryName(wine.country) ?? "Onbekend land"}
               {wine.vintage ? ` · ${wine.vintage}` : ""}
             </Typography>
 

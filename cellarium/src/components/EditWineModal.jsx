@@ -15,10 +15,12 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
+  Autocomplete,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { updateWine, createWine } from "../api/wineApi";
 import WineGlassRating from "./WineGlassRating";
+import { WINE_COUNTRIES } from "../constants/countries";
 
 export default function EditWineModal({ open, onClose, wine, onSave, mode = "edit" }) {
   const [loading, setLoading] = useState(false);
@@ -167,14 +169,25 @@ export default function EditWineModal({ open, onClose, wine, onSave, mode = "edi
             autoFocus
           />
 
-          <TextField
-            label="Land"
-            name="country"
-            value={formData.country}
-            onChange={handleChange}
-            fullWidth
+          <Autocomplete
+            options={WINE_COUNTRIES}
+            getOptionLabel={(option) => option.label || option}
+            value={WINE_COUNTRIES.find((c) => c.code === formData.country) || null}
+            onChange={(event, newValue) => {
+              setFormData((prev) => ({
+                ...prev,
+                country: newValue ? newValue.code : "",
+              }));
+            }}
             disabled={loading}
-            placeholder="bijv. Frankrijk"
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Land"
+                placeholder="Zoek een land..."
+              />
+            )}
+            isOptionEqualToValue={(option, value) => option.code === value.code}
           />
 
           <TextField

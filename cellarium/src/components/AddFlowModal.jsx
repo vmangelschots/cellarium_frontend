@@ -19,9 +19,16 @@ import WineGlassRating from "./WineGlassRating";
 import EditWineModal from "./EditWineModal";
 import { createBottle, getWine, searchWines, updateWine } from "../api/wineApi";
 import { todayISODate } from "../utils/date";
+import { WINE_COUNTRIES } from "../constants/countries";
 
 import CloseIcon from "@mui/icons-material/Close";
 import IconButton from "@mui/material/IconButton";
+
+function getCountryName(isoCode) {
+  if (!isoCode) return null;
+  const country = WINE_COUNTRIES.find((c) => c.code === isoCode);
+  return country ? country.label : isoCode; // Fall back to ISO code if not found
+}
 
 export default function AddFlowModal({ open, onClose, onDone, initialWineId }) {
   const navigate = useNavigate();
@@ -241,7 +248,7 @@ export default function AddFlowModal({ open, onClose, onDone, initialWineId }) {
                   <Paper variant="outlined">
                     <List disablePadding>
                       {results.slice(0, 8).map((w, idx) => {
-                        const secondary = [w.country, w.region, w.vintage]
+                        const secondary = [getCountryName(w.country), w.region, w.vintage]
                           .filter(Boolean)
                           .join(" • ");
                         const meta =
