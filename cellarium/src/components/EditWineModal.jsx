@@ -19,8 +19,10 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { updateWine, createWine } from "../api/wineApi";
+import { getRegion } from "../api/regionApi";
 import WineGlassRating from "./WineGlassRating";
 import { WINE_COUNTRIES } from "../constants/countries";
+import RegionAutocomplete from "./RegionAutocomplete";
 
 export default function EditWineModal({ open, onClose, wine, onSave, mode = "edit" }) {
   const [loading, setLoading] = useState(false);
@@ -30,7 +32,7 @@ export default function EditWineModal({ open, onClose, wine, onSave, mode = "edi
   const [formData, setFormData] = useState({
     name: "",
     country: "",
-    region: "",
+    region: null, // Now stores region object {id, name, country} instead of string
     vintage: "",
     wine_type: "",
     grape_varieties: "",
@@ -42,23 +44,42 @@ export default function EditWineModal({ open, onClose, wine, onSave, mode = "edi
   useEffect(() => {
     if (open) {
       if (mode === "edit" && wine) {
-        setFormData({
-          name: wine.name || "",
-          country: wine.country || "",
-          region: wine.region || "",
-          vintage: wine.vintage || "",
-          wine_type: wine.wine_type || "",
-          grape_varieties: wine.grape_varieties || "",
-          image: wine.image || "",
-          notes: wine.notes || "",
-          rating: wine.rating || "",
-        });
+        // Load region object if region ID exists
+        const loadRegion = async () => {
+          let regionObj = null;
+          if (wine.region) {
+            try {
+              // If wine.region is an ID, fetch the full region object
+              if (typeof wine.region === "number") {
+                regionObj = await getRegion(wine.region);
+              } else if (typeof wine.region === "object" && wine.region.id) {
+                // If it's already an object, use it directly
+                regionObj = wine.region;
+              }
+            } catch (error) {
+              console.error("Failed to load region:", error);
+            }
+          }
+
+          setFormData({
+            name: wine.name || "",
+            country: wine.country || "",
+            region: regionObj,
+            vintage: wine.vintage || "",
+            wine_type: wine.wine_type || "",
+            grape_varieties: wine.grape_varieties || "",
+            image: wine.image || "",
+            notes: wine.notes || "",
+            rating: wine.rating || "",
+          });
+        };
+        loadRegion();
       } else if (mode === "create") {
         // Reset form for create mode
         setFormData({
           name: "",
           country: "",
-          region: "",
+          region: null,
           vintage: "",
           wine_type: "",
           grape_varieties: "",
@@ -101,7 +122,7 @@ export default function EditWineModal({ open, onClose, wine, onSave, mode = "edi
       const payload = new FormData();
       if (formData.name) payload.append("name", formData.name);
       if (formData.country) payload.append("country", formData.country);
-      if (formData.region) payload.append("region", formData.region);
+      if (formData.region?.id) payload.append("region", formData.region.id); // Send region ID
       if (formData.vintage) payload.append("vintage", formData.vintage);
       if (formData.wine_type) payload.append("wine_type", formData.wine_type);
       if (formData.grape_varieties) payload.append("grape_varieties", formData.grape_varieties);
@@ -174,10 +195,20 @@ export default function EditWineModal({ open, onClose, wine, onSave, mode = "edi
             getOptionLabel={(option) => option.label || option}
             value={WINE_COUNTRIES.find((c) => c.code === formData.country) || null}
             onChange={(event, newValue) => {
-              setFormData((prev) => ({
-                ...prev,
-                country: newValue ? newValue.code : "",
-              }));
+              const newCountryCode = newValue ? newValue.code : "";
+              setFormData((prev) => {
+                // Clear region if country changes and region doesn't match new country
+                const shouldClearRegion = 
+                  prev.country !== newCountryCode && 
+                  prev.region && 
+                  prev.region.country !== newCountryCode;
+                
+                return {
+                  ...prev,
+                  country: newCountryCode,
+                  region: shouldClearRegion ? null : prev.region,
+                };
+              });
             }}
             disabled={loading}
             renderInput={(params) => (
@@ -190,14 +221,18 @@ export default function EditWineModal({ open, onClose, wine, onSave, mode = "edi
             isOptionEqualToValue={(option, value) => option.code === value.code}
           />
 
-          <TextField
-            label="Streek"
-            name="region"
+          <RegionAutocomplete
             value={formData.region}
-            onChange={handleChange}
-            fullWidth
+            onChange={(newRegion) => {
+              setFormData((prev) => ({
+                ...prev,
+                region: newRegion,
+              }));
+            }}
+            countryCode={formData.country}
             disabled={loading}
-            placeholder="bijv. Bordeaux"
+            label="Streek"
+            placeholder="Zoek een streek..."
           />
 
           <TextField

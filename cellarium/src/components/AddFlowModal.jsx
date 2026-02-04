@@ -248,7 +248,11 @@ export default function AddFlowModal({ open, onClose, onDone, initialWineId }) {
                   <Paper variant="outlined">
                     <List disablePadding>
                       {results.slice(0, 8).map((w, idx) => {
-                        const secondary = [getCountryName(w.country), w.region, w.vintage]
+                        // Handle region as either object or string for backward compatibility
+                        const regionDisplay = typeof w.region === 'object' && w.region?.name 
+                          ? w.region.name 
+                          : w.region;
+                        const secondary = [getCountryName(w.country), regionDisplay, w.vintage]
                           .filter(Boolean)
                           .join(" • ");
                         const meta =
