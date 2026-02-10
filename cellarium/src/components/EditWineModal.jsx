@@ -24,10 +24,11 @@ import WineGlassRating from "./WineGlassRating";
 import { WINE_COUNTRIES } from "../constants/countries";
 import RegionAutocomplete from "./RegionAutocomplete";
 
-export default function EditWineModal({ open, onClose, wine, onSave, mode = "edit" }) {
+export default function EditWineModal({ open, onClose, wine, onSave, mode = "edit", initialData = {}, initialPhoto = null }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -75,22 +76,39 @@ export default function EditWineModal({ open, onClose, wine, onSave, mode = "edi
         };
         loadRegion();
       } else if (mode === "create") {
-        // Reset form for create mode
+        // Reset form for create mode, using initialData if provided
         setFormData({
-          name: "",
-          country: "",
-          region: null,
-          vintage: "",
-          wine_type: "",
-          grape_varieties: "",
-          notes: "",
-          rating: "",
+          name: initialData.name || "",
+          country: initialData.country || "",
+          region: initialData.region || null,
+          vintage: initialData.vintage || "",
+          wine_type: initialData.wine_type || "",
+          grape_varieties: initialData.grape_varieties || "",
+          notes: initialData.notes || "",
+          rating: initialData.rating || "",
         });
+
+        // Handle initial photo if provided
+        if (initialPhoto) {
+          setImageFile(initialPhoto);
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            setImagePreview(reader.result);
+          };
+          reader.readAsDataURL(initialPhoto);
+        } else {
+          setImageFile(null);
+          setImagePreview(null);
+        }
       }
-      setImageFile(null);
+      
+      if (!initialPhoto) {
+        setImageFile(null);
+        setImagePreview(null);
+      }
       setError("");
     }
-  }, [open, wine, mode]);
+  }, [open, wine, mode, initialData, initialPhoto]);
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -104,6 +122,11 @@ export default function EditWineModal({ open, onClose, wine, onSave, mode = "edi
     const file = e.target.files?.[0];
     if (file) {
       setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
     }
   }
 
@@ -279,6 +302,22 @@ export default function EditWineModal({ open, onClose, wine, onSave, mode = "edi
             <Typography variant="body2" sx={{ mb: 1, fontWeight: 600 }}>
               Wijnfoto (optioneel)
             </Typography>
+            
+            {imagePreview && (
+              <Box sx={{ mb: 2, textAlign: 'center' }}>
+                <img 
+                  src={imagePreview} 
+                  alt="Wijn preview" 
+                  style={{ 
+                    maxWidth: '100%', 
+                    maxHeight: '300px',
+                    borderRadius: '8px',
+                    objectFit: 'contain'
+                  }} 
+                />
+              </Box>
+            )}
+            
             <input
               type="file"
               accept="image/*"

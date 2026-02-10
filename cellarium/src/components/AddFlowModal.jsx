@@ -23,6 +23,8 @@ import { WINE_COUNTRIES } from "../constants/countries";
 
 import CloseIcon from "@mui/icons-material/Close";
 import IconButton from "@mui/material/IconButton";
+import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
+import Box from "@mui/material/Box";
 
 function getCountryName(isoCode) {
   if (!isoCode) return null;
@@ -41,6 +43,7 @@ export default function AddFlowModal({ open, onClose, onDone, initialWineId }) {
   const [selectedWine, setSelectedWine] = useState(null);
   const [isNewWine, setIsNewWine] = useState(false);
   const [createWineOpen, setCreateWineOpen] = useState(false);
+  const [initialPhoto, setInitialPhoto] = useState(null);
 
   const [bottleDraft, setBottleDraft] = useState({
     purchase_date: todayISODate(),
@@ -89,6 +92,7 @@ export default function AddFlowModal({ open, onClose, onDone, initialWineId }) {
     setIsNewWine(false);
     setLoading(false);
     setCreateWineOpen(false);
+    setInitialPhoto(null);
 
     setBottleDraft({ purchase_date: todayISODate(), price: "", store: null });
     setMemoryDraft({ rating: 0, notes: "" });
@@ -130,6 +134,14 @@ export default function AddFlowModal({ open, onClose, onDone, initialWineId }) {
 
   function openCreateWineModal() {
     setCreateWineOpen(true);
+  }
+
+  function handlePhotoSelect(e) {
+    const file = e.target.files?.[0];
+    if (file) {
+      setInitialPhoto(file);
+      setCreateWineOpen(true);
+    }
   }
 
   function finishJustSave() {
@@ -237,6 +249,34 @@ export default function AddFlowModal({ open, onClose, onDone, initialWineId }) {
                   autoFocus
                   fullWidth
                 />
+
+                <Divider>
+                  <Typography variant="body2" color="text.secondary">
+                    OF
+                  </Typography>
+                </Divider>
+
+                <Box>
+                  <input
+                    accept="image/*"
+                    capture="environment"
+                    style={{ display: 'none' }}
+                    id="photo-upload-button"
+                    type="file"
+                    onChange={handlePhotoSelect}
+                  />
+                  <label htmlFor="photo-upload-button">
+                    <Button
+                      variant="outlined"
+                      component="span"
+                      fullWidth
+                      startIcon={<PhotoCameraIcon />}
+                      sx={{ py: 1.5 }}
+                    >
+                      Maak een foto
+                    </Button>
+                  </label>
+                </Box>
 
                 {loading && (
                   <Typography variant="body2" color="text.secondary">
@@ -459,13 +499,19 @@ export default function AddFlowModal({ open, onClose, onDone, initialWineId }) {
       {/* Wine Creation Modal - uses shared EditWineModal in create mode */}
       <EditWineModal
         open={createWineOpen}
-        onClose={() => setCreateWineOpen(false)}
+        onClose={() => {
+          setCreateWineOpen(false);
+          setInitialPhoto(null);
+        }}
         mode="create"
+        initialData={{ name: query.trim() }}
+        initialPhoto={initialPhoto}
         onSave={(createdWineData) => {
           // After wine is successfully created, set it as selected and move to intent
           setIsNewWine(true);
           setSelectedWine({ ...createdWineData });
           setStep("intent");
+          setInitialPhoto(null);
         }}
       />
     </>
