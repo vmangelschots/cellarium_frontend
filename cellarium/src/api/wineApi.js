@@ -124,3 +124,19 @@ export async function createBottle(payload) {
     body: JSON.stringify(payload),
   });
 }
+
+/**
+ * Analyze a wine label image using AI
+ * @param {File} imageFile - The image file to analyze
+ * @returns {Promise<{success: boolean, data: object, confidence: object}>}
+ */
+export async function analyzeWineLabel(imageFile) {
+  const formData = new FormData();
+  formData.append("image", imageFile);
+
+  return http("/api/wines/analyze-label/", {
+    method: "POST",
+    body: formData,
+    skipContentTypeHeader: true,
+  });
+}

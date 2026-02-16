@@ -17,14 +17,16 @@ import {
 } from "@mui/material";
 import WineGlassRating from "./WineGlassRating";
 import EditWineModal from "./EditWineModal";
-import { createBottle, getWine, searchWines, updateWine } from "../api/wineApi";
+import { analyzeWineLabel, createBottle, getWine, searchWines, updateWine } from "../api/wineApi";
 import { todayISODate } from "../utils/date";
 import { WINE_COUNTRIES } from "../constants/countries";
 
 import CloseIcon from "@mui/icons-material/Close";
 import IconButton from "@mui/material/IconButton";
 import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import Box from "@mui/material/Box";
+import LinearProgress from "@mui/material/LinearProgress";
 
 function getCountryName(isoCode) {
   if (!isoCode) return null;
@@ -35,7 +37,7 @@ function getCountryName(isoCode) {
 export default function AddFlowModal({ open, onClose, onDone, initialWineId }) {
   const navigate = useNavigate();
 
-  const [step, setStep] = useState("identify"); // identify | intent | bought | drank
+  const [step, setStep] = useState("identify"); // identify | analyzing | intent | bought | drank
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -44,6 +46,8 @@ export default function AddFlowModal({ open, onClose, onDone, initialWineId }) {
   const [isNewWine, setIsNewWine] = useState(false);
   const [createWineOpen, setCreateWineOpen] = useState(false);
   const [initialPhoto, setInitialPhoto] = useState(null);
+  const [analyzedData, setAnalyzedData] = useState(null);
+  const [analyzeError, setAnalyzeError] = useState(null);
 
   const [bottleDraft, setBottleDraft] = useState({
     purchase_date: todayISODate(),
@@ -93,6 +97,8 @@ export default function AddFlowModal({ open, onClose, onDone, initialWineId }) {
     setLoading(false);
     setCreateWineOpen(false);
     setInitialPhoto(null);
+    setAnalyzedData(null);
+    setAnalyzeError(null);
 
     setBottleDraft({ purchase_date: todayISODate(), price: "", store: null });
     setMemoryDraft({ rating: 0, notes: "" });
@@ -136,12 +142,36 @@ export default function AddFlowModal({ open, onClose, onDone, initialWineId }) {
     setCreateWineOpen(true);
   }
 
-  function handlePhotoSelect(e) {
+  async function handlePhotoSelect(e) {
     const file = e.target.files?.[0];
     if (file) {
       setInitialPhoto(file);
-      setCreateWineOpen(true);
+      setStep("analyzing");
+      setAnalyzeError(null);
+      setAnalyzedData(null);
+
+      try {
+        const result = await analyzeWineLabel(file);
+        if (result.success && result.data) {
+          setAnalyzedData(result.data);
+        }
+        // Open the wine modal with the analyzed data (or empty if analysis failed)
+        setCreateWineOpen(true);
+        setStep("identify");
+      } catch (err) {
+        console.error("Wine label analysis failed:", err);
+        setAnalyzeError(err.message || "Analyse mislukt");
+        // Still allow user to continue with manual entry
+        setCreateWineOpen(true);
+        setStep("identify");
+      }
     }
+  }
+
+  function skipAnalysis() {
+    // User wants to skip analysis and enter data manually
+    setCreateWineOpen(true);
+    setStep("identify");
   }
 
   function finishJustSave() {
@@ -193,11 +223,13 @@ export default function AddFlowModal({ open, onClose, onDone, initialWineId }) {
   const title =
     step === "identify"
       ? "Wijn toevoegen"
-      : step === "intent"
-        ? "Wat wil je doen?"
-        : step === "bought"
-          ? "Fles toevoegen"
-          : "Herinnering opslaan";
+      : step === "analyzing"
+        ? "Label analyseren..."
+        : step === "intent"
+          ? "Wat wil je doen?"
+          : step === "bought"
+            ? "Fles toevoegen"
+            : "Herinnering opslaan";
 
   return (
     <>
@@ -233,10 +265,35 @@ export default function AddFlowModal({ open, onClose, onDone, initialWineId }) {
 
         <DialogContent dividers>
           <Stack spacing={2}>
-            {selectedWine?.name && step !== "identify" && (
+            {selectedWine?.name && step !== "identify" && step !== "analyzing" && (
               <Typography variant="body2" color="text.secondary">
                 Geselecteerd: <strong>{selectedWine.name}</strong>
               </Typography>
+            )}
+
+            {step === "analyzing" && (
+              <Stack spacing={3} sx={{ py: 4 }} alignItems="center">
+                <AutoAwesomeIcon sx={{ fontSize: 48, color: "primary.main" }} />
+                <Stack spacing={1} alignItems="center">
+                  <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                    Wijnlabel wordt geanalyseerd
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" textAlign="center">
+                    Even geduld, de AI leest de informatie van het etiket...
+                  </Typography>
+                </Stack>
+                <Box sx={{ width: "100%", maxWidth: 300 }}>
+                  <LinearProgress />
+                </Box>
+                <Button
+                  variant="text"
+                  size="small"
+                  onClick={skipAnalysis}
+                  sx={{ mt: 2 }}
+                >
+                  Overslaan en handmatig invullen
+                </Button>
+              </Stack>
             )}
 
             {step === "identify" && (
@@ -502,9 +559,18 @@ export default function AddFlowModal({ open, onClose, onDone, initialWineId }) {
         onClose={() => {
           setCreateWineOpen(false);
           setInitialPhoto(null);
+          setAnalyzedData(null);
         }}
         mode="create"
-        initialData={{ name: query.trim() }}
+        initialData={analyzedData ? {
+          name: analyzedData.name || query.trim(),
+          country: analyzedData.country || "",
+          region: analyzedData.matched_region || null,
+          vintage: analyzedData.vintage || "",
+          wine_type: analyzedData.wine_type || "",
+          grape_varieties: analyzedData.grape_varieties || "",
+          alcohol_percentage: analyzedData.alcohol_percentage ?? "",
+        } : { name: query.trim() }}
         initialPhoto={initialPhoto}
         onSave={(createdWineData) => {
           // After wine is successfully created, set it as selected and move to intent
@@ -512,6 +578,7 @@ export default function AddFlowModal({ open, onClose, onDone, initialWineId }) {
           setSelectedWine({ ...createdWineData });
           setStep("intent");
           setInitialPhoto(null);
+          setAnalyzedData(null);
         }}
       />
     </>
