@@ -157,13 +157,14 @@ export default function EditWineModal({ open, onClose, wine, onSave, mode = "edi
       if (formData.notes) payload.append("notes", formData.notes);
       if (formData.rating) payload.append("rating", formData.rating);
 
+      let savedWine;
       if (mode === "create") {
-        await createWine(payload);
+        savedWine = await createWine(payload);
       } else {
-        await updateWine(wine.id, payload);
+        savedWine = await updateWine(wine.id, payload);
       }
 
-      onSave?.(formData);
+      onSave?.(savedWine);
       onClose();
     } catch (e) {
       setError(e.message || `Failed to ${mode === "create" ? "create" : "update"} wine`);
