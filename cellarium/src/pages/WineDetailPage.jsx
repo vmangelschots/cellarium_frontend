@@ -203,6 +203,7 @@ function formatMoney(value) {
             <Typography variant="body2" color="text.secondary">
               {getCountryName(wine.country) ?? "Onbekend land"}
               {wine.vintage ? ` · ${wine.vintage}` : ""}
+              {wine.alcohol_percentage ? ` · ${wine.alcohol_percentage}%` : ""}
             </Typography>
 
             <Stack direction="row" spacing={2} sx={{ mt: 1.5 }}>

@@ -37,6 +37,7 @@ export default function EditWineModal({ open, onClose, wine, onSave, mode = "edi
     vintage: "",
     wine_type: "",
     grape_varieties: "",
+    alcohol_percentage: "",
     notes: "",
     rating: "",
   });
@@ -69,6 +70,7 @@ export default function EditWineModal({ open, onClose, wine, onSave, mode = "edi
             vintage: wine.vintage || "",
             wine_type: wine.wine_type || "",
             grape_varieties: wine.grape_varieties || "",
+            alcohol_percentage: wine.alcohol_percentage ?? "",
             image: wine.image || "",
             notes: wine.notes || "",
             rating: wine.rating || "",
@@ -84,6 +86,7 @@ export default function EditWineModal({ open, onClose, wine, onSave, mode = "edi
           vintage: initialData.vintage || "",
           wine_type: initialData.wine_type || "",
           grape_varieties: initialData.grape_varieties || "",
+          alcohol_percentage: initialData.alcohol_percentage ?? "",
           notes: initialData.notes || "",
           rating: initialData.rating || "",
         });
@@ -149,6 +152,7 @@ export default function EditWineModal({ open, onClose, wine, onSave, mode = "edi
       if (formData.vintage) payload.append("vintage", formData.vintage);
       if (formData.wine_type) payload.append("wine_type", formData.wine_type);
       if (formData.grape_varieties) payload.append("grape_varieties", formData.grape_varieties);
+      if (formData.alcohol_percentage !== "" && formData.alcohol_percentage !== null) payload.append("alcohol_percentage", formData.alcohol_percentage);
       if (imageFile) payload.append("image", imageFile);
       if (formData.notes) payload.append("notes", formData.notes);
       if (formData.rating) payload.append("rating", formData.rating);
@@ -285,6 +289,21 @@ export default function EditWineModal({ open, onClose, wine, onSave, mode = "edi
               <MenuItem value="sparkling">Schuimwijn</MenuItem>
             </Select>
           </FormControl>
+
+          <TextField
+            label="Alcoholpercentage"
+            name="alcohol_percentage"
+            value={formData.alcohol_percentage}
+            onChange={handleChange}
+            fullWidth
+            disabled={loading}
+            placeholder="bijv. 13.5"
+            type="number"
+            inputProps={{ step: "0.1", min: "0", max: "100" }}
+            InputProps={{
+              endAdornment: <Typography color="text.secondary">%</Typography>,
+            }}
+          />
 
           <TextField
             label="Druivensoorten"
