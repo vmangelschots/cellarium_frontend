@@ -41,6 +41,7 @@ export default function WinesPage() {
   const [loading, setLoading] = useState(true);
   const [filterOpen, setFilterOpen] = useState(false);
   const [selectedTypes, setSelectedTypes] = useState([]);
+  const [selectedCountries, setSelectedCountries] = useState([]);
 
   async function load() {
     setLoading(true);
@@ -51,6 +52,13 @@ export default function WinesPage() {
   useEffect(() => {
     load();
   }, []);
+
+  const availableCountries = useMemo(() => {
+    const countries = wines
+      .map((w) => w.country)
+      .filter(Boolean);
+    return [...new Set(countries)].sort();
+  }, [wines]);
 
   const stats = useMemo(() => {
     const totalWines = wines.length;
@@ -83,9 +91,14 @@ export default function WinesPage() {
     if (selectedTypes.length > 0) {
       result = result.filter((w) => selectedTypes.includes(w.wine_type));
     }
+
+    // Filter by country
+    if (selectedCountries.length > 0) {
+      result = result.filter((w) => selectedCountries.includes(w.country));
+    }
     
     return result;
-  }, [wines, searchQuery, selectedTypes]);
+  }, [wines, searchQuery, selectedTypes, selectedCountries]);
 
   async function onAdd(e) {
     e.preventDefault();
@@ -193,7 +206,7 @@ export default function WinesPage() {
               }}
             >
               <Badge
-                badgeContent={selectedTypes.length}
+                badgeContent={selectedTypes.length + selectedCountries.length}
                 color="primary"
                 sx={{
                   "& .MuiBadge-badge": {
@@ -254,12 +267,54 @@ export default function WinesPage() {
                       variant="outlined"
                     />
                   ))}
-                  
-                  {selectedTypes.length > 0 && (
+                </Stack>
+
+                {availableCountries.length > 0 && (
+                  <>
+                    <Divider sx={{ my: 1.5, borderColor: "rgba(255,255,255,0.15)" }} />
+                    <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                      {availableCountries.map((country) => (
+                        <Chip
+                          key={country}
+                          label={country}
+                          onClick={() => {
+                            setSelectedCountries((prev) =>
+                              prev.includes(country)
+                                ? prev.filter((c) => c !== country)
+                                : [...prev, country]
+                            );
+                          }}
+                          sx={{
+                            backgroundColor: selectedCountries.includes(country)
+                              ? "#cbb994"
+                              : "rgba(255,255,255,0.12)",
+                            color: selectedCountries.includes(country)
+                              ? "#000"
+                              : "rgba(255,255,255,0.88)",
+                            borderColor: selectedCountries.includes(country)
+                              ? "#cbb994"
+                              : "rgba(255,255,255,0.25)",
+                            fontWeight: selectedCountries.includes(country) ? 700 : 500,
+                            transition: "all 120ms ease",
+                            "&:hover": {
+                              backgroundColor: selectedCountries.includes(country)
+                                ? "#d4c6a5"
+                                : "rgba(255,255,255,0.2)",
+                            },
+                          }}
+                          variant="outlined"
+                        />
+                      ))}
+                    </Stack>
+                  </>
+                )}
+
+                {(selectedTypes.length > 0 || selectedCountries.length > 0) && (
+                  <Stack direction="row" sx={{ mt: 1.5 }}>
                     <Chip
                       label="Filters wissen"
-                      onClick={() => setSelectedTypes([])}
-                      onDelete={() => setSelectedTypes([])}
+                      onClick={() => { setSelectedTypes([]); setSelectedCountries([]); }}
+                      onDelete={() => { setSelectedTypes([]); setSelectedCountries([]); }}
                       deleteIcon={<CloseIcon />}
                       sx={{
                         backgroundColor: "rgba(255,255,255,0.12)",
@@ -271,8 +326,8 @@ export default function WinesPage() {
                       }}
                       variant="outlined"
                     />
-                  )}
-                </Stack>
+                  </Stack>
+                )}
               </CardContent>
             </Card>
           </Collapse>
@@ -349,7 +404,7 @@ export default function WinesPage() {
             Geen wijnen gevonden
           </Typography>
           <Typography variant="body2">
-            {selectedTypes.length > 0 || searchQuery
+            {selectedTypes.length > 0 || selectedCountries.length > 0 || searchQuery
               ? "Pas je zoekopdracht of filters aan"
               : "Voeg je eerste wijn toe om te beginnen"}
           </Typography>
